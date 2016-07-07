@@ -24,7 +24,7 @@ import webbrowser
 import socket
 import csv
 
-holding_user = 1024329
+holding_user_id = 283579169
 
 app = Flask(__name__)
 
@@ -54,8 +54,14 @@ if __name__ == '__main__':
 	app.run(port = 8888)
 
 client = Client(oauth)
+holding_user = client.user(user_id = holding_user_id)
 
 with open('input.csv', 'rU') as f:
 	reader = csv.reader(f)
 	for row in reader:
-		print row
+		user_id, object_id = row
+		as_user = client.user(user_id = user_id)
+
+		folder = client.as_user(as_user).folder(folder_id = object_id).get()
+		collab = folder.add_collaborator(holding_user, 'editor')
+		collab.update_info('owner')
